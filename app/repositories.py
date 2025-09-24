@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
 from typing import Optional, List
+from sqlalchemy.orm import Session
 from .models import Project, Task
+from abc import ABC, abstractmethod
 
 class ProjectRepository(ABC):
 # This is the interface for all project-related data operations
@@ -56,3 +57,35 @@ class TaskRepository(ABC):
     @abstractmethod
     def delete(self, task_id: int) -> None:
         raise NotImplementedError
+
+
+
+
+class SqlAlchemyProjectRepository(ProjectRepository):
+    def __init__(self, session: Session):
+        self.session = session
+
+    def add(self, project: Project) -> Project:
+        self.session.add(project)
+        self.session.flush()  # Ensures the ID is generated and available
+        return project
+
+    def get_by_id(self, project_id: int) -> Optional[Project]:
+        return self.session.query(Project).get(project_id)
+
+    def get_by_name(self, name: str) -> Optional[Project]:
+        return self.session.query(Project).filter_by(name=name).first()
+
+    def list_all(self) -> List[Project]:
+        return self.session.query(Project).all()
+
+    def update(self, project: Project) -> Project:
+        self.session.add(project)
+        self.session.flush()
+        return project
+
+    def delete(self, project_id: int) -> None:
+        project = self.get_by_id(project_id)
+        if project:
+            self.session.delete(project)
+            self.session.flush()
