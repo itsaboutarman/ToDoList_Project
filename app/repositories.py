@@ -1,4 +1,5 @@
 from typing import Optional, List
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .models import Project, Task
 from abc import ABC, abstractmethod
@@ -67,17 +68,19 @@ class SqlAlchemyProjectRepository(ProjectRepository):
 
     def add(self, project: Project) -> Project:
         self.session.add(project)
-        self.session.flush()  # Ensures the ID is generated and available
+        self.session.flush()
         return project
 
     def get_by_id(self, project_id: int) -> Optional[Project]:
-        return self.session.query(Project).get(project_id)
+        return self.session.get(Project, project_id)
 
-    def get_by_name(self, name: str) -> Optional[Project]:
-        return self.session.query(Project).filter_by(name=name).first()
+    def get_by_name(self, project_name: str) -> Optional[Project]:
+        statement = select(Project).filter_by(name=project_name)
+        return self.session.scalars(statement).first()
 
-    def list_all(self) -> List[Project]:
-        return self.session.query(Project).all()
+    def get_all(self) -> List[Project]:
+        statement = select(Project)
+        return list(self.session.scalars(statement).all())
 
     def update(self, project: Project) -> Project:
         self.session.add(project)
