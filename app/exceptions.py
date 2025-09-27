@@ -28,6 +28,27 @@ class TaskLimitExceededError(ToDoListError):
     def __init__(self, project_name: str, limit: int):
         super().__init__(f"Cannot add new task to '{project_name}'. The maximum limit of {limit} tasks has been reached.")
 
-class InvalidTaskStateError(ToDoListError):
-    # raised for invalid operations related to task state
-    pass
+class InvalidTaskStatusError(ToDoListError):
+    # raised when a task status is invalid
+    def __init__(self, status: str) -> None:
+        super().__init__(
+            f"Invalid task status '{status}'. Allowed values: todo, doing, done."
+        )
+
+
+class InvalidDeadlineError(ToDoListError):
+    # raised when a deadline is invalid (bad format or impossible date)
+    def __init__(self, deadline_value: str) -> None:
+        super().__init__(f"Invalid deadline value: {deadline_value}")
+
+
+class DatabaseConnectionError(ToDoListError):
+    # raised when the application cannot connect to the database
+    def __init__(self, db_url: str) -> None:
+        super().__init__(f"Could not connect to database at {db_url}.")
+
+
+class MigrationError(ToDoListError):
+    # raised when database migrations are out of sync with models
+    def __init__(self, message: str = "Database schema mismatch with models.") -> None:
+        super().__init__(message)
