@@ -1,36 +1,19 @@
+from __future__ import annotations
+import datetime
 import enum
-from datetime import datetime
-from typing import List, Optional
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-    ForeignKey,
-    Enum,
-)
-from sqlalchemy.orm import declarative_base, relationship, Mapped
+from typing import Optional, TYPE_CHECKING
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy.orm import Mapped, relationship
 
+from .base import Base
 
-Base = declarative_base()
+if TYPE_CHECKING:
+    from .project import Project
 
 class TaskStatus(enum.Enum):
     TODO = "todo"
     DOING = "doing"
     DONE = "done"
-
-class Project(Base):
-    __tablename__ = "projects"
-
-    id: Mapped[int] = Column(Integer, primary_key=True, index=True)
-    name: Mapped[str] = Column(String(100), unique=True, nullable=False, index=True)
-    description: Mapped[Optional[str]] = Column(String(500), nullable=True)
-    created_at: Mapped[datetime] = Column(DateTime, default=datetime.utcnow)
-
-    tasks: Mapped[List["Task"]] = relationship("Task", back_populates="project", cascade="all, delete-orphan")
-
-    def __repr__(self):
-        return f"<Project(id={self.id}, name='{self.name}')>"
 
 
 class Task(Base):
