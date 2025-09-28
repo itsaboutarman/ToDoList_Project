@@ -20,8 +20,8 @@ class ProjectLimitExceededError(ToDoListError):
 
 class TaskNotFoundError(ToDoListError):
     # raised when a task is not found by its ID
-    def __init__(self, task_id: int):
-        super().__init__(f"Task with ID '{task_id}' not found.")
+    def __init__(self,  identifier: int | str):
+        super().__init__(f"Task with  identifier '{identifier}' not found.")
 
 class TaskLimitExceededError(ToDoListError):
     # raised when the maximum number of tasks for a project has been reached
